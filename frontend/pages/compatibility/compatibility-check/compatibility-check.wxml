@@ -1,0 +1,246 @@
+<!--pages/compatibility/compatibility-check/compatibility-check.wxml-->
+<view class="container">
+  <!-- Error State -->
+  <view wx:if="{{hasError}}" class="error-section">
+    <view class="error-content">
+      <image src="../../../assets/icons/error.png" class="error-icon" mode="aspectFit" />
+      <text class="error-message">{{errorMessage}}</text>
+      <button class="action-btn retry-btn" bindtap="loadSessionData">重新加载</button>
+    </view>
+  </view>
+
+  <!-- Main Content (only show if no error) -->
+  <view wx:elif="{{sessionData}}">
+    <!-- Session Info -->
+    <view class="session-info">
+      <view class="info-item">
+        <text class="info-label">危废数量:</text>
+        <text class="info-value">{{sessionData.wasteCount || sessionData.wastes.length || 0}}种</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">总计划用量:</text>
+        <text class="info-value">{{sessionData.totalAmount || 0}}kg</text>
+      </view>
+    </view>
+
+    <!-- Waste List -->
+    <view wx:if="{{sessionData.wastes && sessionData.wastes.length > 0}}" class="waste-section">
+      <view class="section-title">参与检查的危废</view>
+      <view class="waste-list">
+        <view wx:for="{{sessionData.wastes}}" wx:key="wasteId" class="waste-item">
+          <view class="waste-header">
+            <text class="waste-code">{{item.wasteCode}}</text>
+            <text class="waste-name">{{item.wasteName}}</text>
+          </view>
+          <view class="waste-details">
+            <text class="detail-text">计划用量: {{item.plannedAmount || 0}}kg</text>
+            <text class="detail-text">来源: {{item.sourceUnit || '未设置'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Check Status -->
+    <view class="check-section">
+      <!-- Idle State -->
+      <view wx:if="{{checkStatus === 'idle'}}" class="status-idle">
+        <view class="status-icon">
+          <image src="../../../assets/icons/compatibility.png" class="icon" mode="aspectFit" />
+        </view>
+        <text class="status-title">准备进行相容性检查</text>
+        <text class="status-desc">点击开始按钮启动相容性检查</text>
+        <button 
+          class="action-btn start-btn" 
+          bindtap="onStartCheck"
+          disabled="{{!sessionData.wastes || sessionData.wastes.length < 2}}"
+        >
+          {{!sessionData.wastes || sessionData.wastes.length < 2 ? '至少需要2种危废' : '开始检查'}}
+        </button>
+      </view>
+
+      <!-- Checking State -->
+      <view wx:if="{{checkStatus === 'checking'}}" class="status-checking">
+        <view class="status-icon checking">
+          <image src="../../../assets/icons/compatibility.png" class="icon rotating" mode="aspectFit" />
+        </view>
+        <text class="status-title">正在进行相容性检查</text>
+        <text class="status-desc">请稍等，系统正在分析危废间的相容性...</text>
+        <view class="progress-bar">
+          <view class="progress-fill"></view>
+        </view>
+      </view>
+
+      <!-- Completed State -->
+      <view wx:if="{{checkStatus === 'completed'}}" class="status-completed">
+        <!-- Results Summary -->
+        <view class="results-summary">
+          <view class="summary-header">
+            <view class="result-icon {{compatibilityPassed === true ? 'success' : 'danger'}}">
+              <text class="result-symbol">{{compatibilityPassed === true ? '✓' : '✗'}}</text>
+            </view>
+            <text class="result-title">
+              {{compatibilityPassed === true ? '相容性检查通过' : '相容性检查不通过'}}
+            </text>
+          </view>
+          
+          <view class="summary-stats">
+            <view class="stat-item">
+              <text class="stat-number">{{incompatiblePairs.length || 0}}</text>
+              <text class="stat-label">不相容组合</text>
+            </view>
+            <view wx:if="{{compatibilityResults.totalPairs}}" class="stat-item">
+              <text class="stat-number">{{compatibilityResults.compatiblePairsCount || 0}}</text>
+              <text class="stat-label">相容组合</text>
+            </view>
+          </view>
+          
+          <!-- Debug information (can be removed in production) -->
+          <view wx:if="{{stateDebugMode}}" class="debug-section">
+            <text class="debug-title">调试信息:</text>
+            <text class="debug-text">总配对数: {{compatibilityResults.totalPairs || '未知'}}</text>
+            <text class="debug-text">兼容状态: {{compatibilityPassed === true ? '通过' : (compatibilityPassed === false ? '未通过' : '未知')}}</text>
+            <text class="debug-text">不相容数组长度: {{incompatiblePairs.length}}</text>
+            <text class="debug-text">相容数组长度: {{compatibilityResults.compatiblePairsCount || 0}}</text>
+            <text class="debug-text">原始结果: {{compatibilityResults.compatible}}</text>
+          </view>
+          
+          <!-- Compatibility Status Text -->
+          <view class="compatibility-status">
+            <text wx:if="{{compatibilityPassed === true}}" class="status-text success">
+              ✓ 所有危废间相容性良好，可以安全进行配伍混合
+            </text>
+            <text wx:elif="{{compatibilityPassed === false}}" class="status-text danger">
+              ✗ 发现 {{incompatiblePairs.length}} 个不相容组合，建议调整配伍方案或分批处理
+            </text>
+          </view>
+        </view>
+
+        <!-- Incompatible Pairs -->
+        <view wx:if="{{incompatiblePairs.length > 0}}" class="incompatible-section">
+          <view class="section-header">
+            <text class="section-title">不相容组合详情</text>
+            <text class="section-count">{{incompatiblePairs.length}}</text>
+          </view>
+          
+          <view class="incompatible-list">
+            <view wx:for="{{incompatiblePairs}}" wx:key="index" class="incompatible-item">
+              <view class="pair-header">
+                <view class="waste-info">
+                  <text class="waste-name primary">{{item.displayName1 || item.wasteName1 || item.wasteCode1 || '未知'}}</text>
+                  <text wx:if="{{item.wasteCode1 && item.wasteName1}}" class="waste-code secondary">({{item.wasteCode1}})</text>
+                </view>
+                <text class="vs-text">×</text>
+                <view class="waste-info">
+                  <text class="waste-name primary">{{item.displayName2 || item.wasteName2 || item.wasteCode2 || '未知'}}</text>
+                  <text wx:if="{{item.wasteCode2 && item.wasteName2}}" class="waste-code secondary">({{item.wasteCode2}})</text>
+                </view>
+              </view>
+              
+              <view class="risk-info">
+                <view class="conflict-reason">
+                  <text class="reason-label">冲突原因：</text>
+                  <text class="reason-text">{{item.conflictReason || item.reason || item.riskDescription || item.description || '危废间存在相容性风险'}}</text>
+                </view>
+                
+                <!-- Debug info (can be removed in production) -->
+                <view wx:if="{{stateDebugMode}}" class="debug-info">
+                  <text class="debug-text">原始数据: {{item.wasteCode1 || '无'}} + {{item.wasteCode2 || '无'}} | 原因: {{item.conflictReason || item.reason || '无'}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- Compatible Pairs (Optional) -->
+        <view wx:if="{{compatibilityResults.compatiblePairsCount > 0}}" class="compatible-section">
+          <view class="section-header">
+            <text class="section-title">相容组合详情</text>
+            <text class="section-count">{{compatibilityResults.compatiblePairsCount}}</text>
+          </view>
+          
+          <view class="compatible-list">
+            <view wx:for="{{compatibilityResults.enhancedCompatiblePairs}}" wx:key="index" class="compatible-item">
+              <view class="pair-header">
+                <view class="waste-info">
+                  <text class="waste-name primary">{{item.displayName1 || item.wasteName1 || item.wasteCode1 || '未知'}}</text>
+                  <text wx:if="{{item.wasteCode1 && item.wasteName1}}" class="waste-code secondary">({{item.wasteCode1}})</text>
+                </view>
+                <text class="vs-text">✓</text>
+                <view class="waste-info">
+                  <text class="waste-name primary">{{item.displayName2 || item.wasteName2 || item.wasteCode2 || '未知'}}</text>
+                  <text wx:if="{{item.wasteCode2 && item.wasteName2}}" class="waste-code secondary">({{item.wasteCode2}})</text>
+                </view>
+              </view>
+              
+              <view class="compatibility-info">
+                <text class="compatibility-text">✓ 相容性良好，可安全混合</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- Action Buttons -->
+        <view class="action-buttons">
+          <!-- Continue button only for compatible results - moved to top for better UX -->
+          <button 
+            wx:if="{{compatibilityPassed === true && canProceed !== false}}" 
+            class="action-btn continue-btn" 
+            bindtap="onContinue"
+          >
+            继续配伍
+          </button>
+          
+          <button class="action-btn restart-btn" bindtap="onRestartCheck">重新检查</button>
+          
+          <!-- Warning for incompatible results -->
+          <view wx:if="{{compatibilityPassed === false}}" class="incompatible-warning">
+            <view class="warning-icon">⚠️</view>
+            <view class="warning-content">
+              <text class="warning-title">无法继续配伍计算</text>
+              <text class="warning-desc">存在{{incompatiblePairs.length || 0}}个不相容组合，请调整危废配比或移除冲突项后重新检查</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Failed State -->
+      <view wx:if="{{checkStatus === 'failed'}}" class="status-failed">
+        <view class="status-icon failed">
+          <image src="../../../assets/icons/error.png" class="icon" mode="aspectFit" />
+        </view>
+        <text class="status-title">检查失败</text>
+        <text class="status-desc">相容性检查过程中出现错误，请重试</text>
+        <view class="failed-details">
+          <text class="error-detail">{{errorMessage || '系统错误，请稍后重试'}}</text>
+        </view>
+        <view class="failed-actions">
+          <button class="action-btn retry-btn" bindtap="onStartCheck">重试检查</button>
+          <button class="action-btn secondary-btn" bindtap="onReturn">返回</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- Recommendations -->
+    <view wx:if="{{checkStatus === 'completed' && compatibilityPassed === false}}" class="recommendations">
+      <view class="section-header">
+        <text class="section-title">处理建议</text>
+      </view>
+      <view class="recommendation-list">
+        <text class="recommendation-item">• 移除不相容的危废组合</text>
+        <text class="recommendation-item">• 调整危废配比</text>
+        <text class="recommendation-item">• 考虑分批处理高风险危废</text>
+        <text class="recommendation-item">• 咨询专业技术人员评估处理方案</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Loading State (when no session data) -->
+  <view wx:elif="{{!hasError}}" class="loading-section">
+    <view class="loading-content">
+      <view class="loading-icon">
+        <image src="../../../assets/icons/compatibility.png" class="icon rotating" mode="aspectFit" />
+      </view>
+      <text class="loading-text">加载会话数据...</text>
+    </view>
+  </view>
+</view>

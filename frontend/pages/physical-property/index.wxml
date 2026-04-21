@@ -1,0 +1,29 @@
+<view class="main-page-container">
+  <!-- New integrated header -->
+  <view class="page-title-section">
+    <text class="main-title">理化特性</text>
+    <text class="subtitle">危废物理化学性质分析</text>
+  </view>
+  
+  <view class="modules-grid">
+    <view 
+      class="module-card property-card-main {{item.id}}-card" 
+      wx:for="{{physicalPropertyModules}}" 
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="handleModuleClick"
+    >
+      <view class="card-background"></view>
+      <view class="module-content">
+        <view class="module-icon">{{item.icon}}</view>
+        <view class="module-info">
+          <text class="module-name">{{item.name}}</text>
+          <text class="module-desc">{{item.desc}}</text>
+        </view>
+        <view class="card-arrow">
+          <text class="arrow-icon">→</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

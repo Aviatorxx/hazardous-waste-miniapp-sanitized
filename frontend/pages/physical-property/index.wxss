@@ -1,0 +1,327 @@
+.main-page-container {
+  background: linear-gradient(135deg, #f8faff 0%, #f1f5f9 100%);
+  min-height: 100vh;
+  padding: 0 0 40px 0;
+}
+
+.page-title-section {
+  padding: 32px 20px 24px;
+  text-align: center;
+  background: transparent;
+}
+
+.main-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+  display: block;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 400;
+  opacity: 0.8;
+  display: block;
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 20px 16px;
+}
+
+.module-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+}
+
+.property-card-main {
+  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin: 8px;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.property-card-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.module-card:active {
+  transform: translateY(-2px) scale(0.98);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.05;
+  transition: opacity 0.3s ease;
+}
+
+.module-card:active .card-background {
+  opacity: 0.1;
+}
+
+.module-content {
+  display: flex;
+  align-items: center;
+  padding: 24px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.module-icon {
+  font-size: 32px;
+  margin-right: 16px;
+  min-width: 50px;
+  text-align: center;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.module-info {
+  flex: 1;
+}
+
+.module-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  display: block;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.module-desc {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
+  display: block;
+}
+
+.card-arrow {
+  margin-left: 12px;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.module-card:active .card-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.arrow-icon {
+  font-size: 20px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+/* Category-specific left borders for main page cards */
+.property-card-main.elements-card { 
+  border-left-color: #22c55e; 
+}
+.property-card-main.heat_value-card { 
+  border-left-color: #8b5cf6; 
+}
+.property-card-main.ph_value-card { 
+  border-left-color: #14b8a6; 
+}
+.property-card-main.water_content-card { 
+  border-left-color: #06b6d4; 
+}
+.property-card-main.flash_point-card { 
+  border-left-color: #ef4444; 
+}
+.property-card-main.heavy_metals-card { 
+  border-left-color: #f59e0b; 
+}
+.property-card-main.alkali_metals-card { 
+  border-left-color: #3b82f6; 
+}
+
+/* Color Coding for Different Property Types */
+.elements-card {
+  border-left: 4px solid #22c55e;
+}
+.elements-card .card-background {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+.elements-card:active {
+  border-color: #16a34a;
+}
+
+.heavy_metals-card {
+  border-left: 4px solid #f59e0b;
+}
+.heavy_metals-card .card-background {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+.heavy_metals-card:active {
+  border-color: #d97706;
+}
+
+.alkali_metals-card {
+  border-left: 4px solid #3b82f6;
+}
+.alkali_metals-card .card-background {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+.alkali_metals-card:active {
+  border-color: #2563eb;
+}
+
+.heat_value-card {
+  border-left: 4px solid #8b5cf6;
+}
+.heat_value-card .card-background {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+.heat_value-card:active {
+  border-color: #7c3aed;
+}
+
+.ph_value-card {
+  border-left: 4px solid #14b8a6;
+}
+.ph_value-card .card-background {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+}
+.ph_value-card:active {
+  border-color: #0d9488;
+}
+
+.water_content-card {
+  border-left: 4px solid #06b6d4;
+}
+.water_content-card .card-background {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+.water_content-card:active {
+  border-color: #0891b2;
+}
+
+.flash_point-card {
+  border-left: 4px solid #ef4444;
+}
+.flash_point-card .card-background {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+.flash_point-card:active {
+  border-color: #dc2626;
+}
+
+/* NEW: Hazard Properties Card Styles */
+.hazard_oxidizing-card {
+  border-left: 4px solid #dc2626;
+}
+.hazard_oxidizing-card .card-background {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+.property-card-main.hazard_oxidizing-card { 
+  border-left-color: #dc2626; 
+}
+
+.hazard_reducing-card {
+  border-left: 4px solid #2563eb;
+}
+.hazard_reducing-card .card-background {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+.property-card-main.hazard_reducing-card { 
+  border-left-color: #2563eb; 
+}
+
+.hazard_volatile-card {
+  border-left: 4px solid #6b7280;
+}
+.hazard_volatile-card .card-background {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+.property-card-main.hazard_volatile-card { 
+  border-left-color: #6b7280; 
+}
+
+.hazard_flammable-card {
+  border-left: 4px solid #ea580c;
+}
+.hazard_flammable-card .card-background {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+}
+.property-card-main.hazard_flammable-card { 
+  border-left-color: #ea580c; 
+}
+
+.hazard_toxic-card {
+  border-left: 4px solid #7c3aed;
+}
+.hazard_toxic-card .card-background {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+.property-card-main.hazard_toxic-card { 
+  border-left-color: #7c3aed; 
+}
+
+.hazard_reactive-card {
+  border-left: 4px solid #059669;
+}
+.hazard_reactive-card .card-background {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+.property-card-main.hazard_reactive-card { 
+  border-left-color: #059669; 
+}
+
+.hazard_infectious-card {
+  border-left: 4px solid #dc2626;
+}
+.hazard_infectious-card .card-background {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+.property-card-main.hazard_infectious-card { 
+  border-left-color: #dc2626; 
+}
+
+.hazard_corrosive-card {
+  border-left: 4px solid #ca8a04;
+}
+.hazard_corrosive-card .card-background {
+  background: linear-gradient(135deg, #ca8a04 0%, #a16207 100%);
+}
+.property-card-main.hazard_corrosive-card { 
+  border-left-color: #ca8a04; 
+}
+
+.hazard_halogenated-card {
+  border-left: 4px solid #0891b2;
+}
+.hazard_halogenated-card .card-background {
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+}
+.property-card-main.hazard_halogenated-card { 
+  border-left-color: #0891b2; 
+}
+
+.hazard_cyanide-card {
+  border-left: 4px solid #1f2937;
+}
+.hazard_cyanide-card .card-background {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+.property-card-main.hazard_cyanide-card { 
+  border-left-color: #1f2937; 
+} 

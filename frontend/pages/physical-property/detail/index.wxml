@@ -1,0 +1,408 @@
+<view class="detail-page">
+  <!-- Header -->
+  <view class="page-header">
+    <view class="header-content">
+      <button class="back-btn" bindtap="navigateBack">
+        <text class="back-icon">←</text>
+        <text class="back-text">返回</text>
+      </button>
+      <view class="header-info">
+        <text class="page-title">{{getCategoryTitle(categoryType)}}</text>
+        <text class="data-count">共 {{filteredData.length}} 条数据</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Search -->
+  <view class="search-container">
+    <view class="search-box">
+      <text class="search-icon">🔍</text>
+      <input 
+        class="search-input"
+        placeholder="请输入危废代码或关键字"
+        value="{{searchText}}"
+        bindinput="onSearchInput"
+      />
+    </view>
+  </view>
+
+  <!-- Loading State -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在加载数据...</text>
+  </view>
+
+  <!-- Error State -->
+  <view class="error-container" wx:elif="{{error}}">
+    <text class="error-icon">⚠️</text>
+    <text class="error-text">{{error}}</text>
+    <button class="retry-btn" bindtap="loadData">重新加载</button>
+  </view>
+
+  <!-- Data List -->
+  <scroll-view class="data-list" scroll-y wx:elif="{{filteredData.length > 0}}">
+    <view 
+      class="data-card {{categoryType}}-category" 
+      wx:for="{{filteredData}}" 
+      wx:key="id"
+    >
+      <!-- Card Header -->
+      <view class="card-header">
+        <view class="waste-info">
+          <text class="waste-code">{{item.waste_code || 'N/A'}}</text>
+          <text class="waste-name">{{item.waste_name || '未知名称'}}</text>
+          <text class="waste-source">来源: {{item.source_unit || '未知来源'}}</text>
+        </view>
+      </view>
+      
+      <!-- Single Value Properties - OPTIMIZED -->
+      <view class="single-value-display" wx:if="{{categoryType === 'heat_value' || categoryType === 'ph_value' || categoryType === 'water_content' || categoryType === 'flash_point'}}">
+        <view class="value-container {{categoryType}}-value">
+          <!-- Heat Value -->
+          <view wx:if="{{categoryType === 'heat_value'}}" class="value-content-optimized">
+            <view class="value-main">
+              <text class="value-number-optimized">{{item.heat_value_cal_per_g || '-'}}</text>
+              <text class="value-unit-optimized" wx:if="{{item.heat_value_cal_per_g}}">cal/g</text>
+            </view>
+            <text class="value-label">热值</text>
+          </view>
+          
+          <!-- pH Value -->
+          <view wx:if="{{categoryType === 'ph_value'}}" class="value-content-optimized">
+            <view class="value-main">
+              <text class="value-number-optimized">{{item.ph || '-'}}</text>
+              <text class="value-unit-optimized">pH</text>
+            </view>
+            <text class="value-label">酸碱度</text>
+          </view>
+          
+          <!-- Water Content -->
+          <view wx:if="{{categoryType === 'water_content'}}" class="value-content-optimized">
+            <view class="value-main">
+              <text class="value-number-optimized">{{item.water_content_percent || '-'}}</text>
+              <text class="value-unit-optimized" wx:if="{{item.water_content_percent}}">%</text>
+            </view>
+            <text class="value-label">含水率</text>
+          </view>
+          
+          <!-- Flash Point -->
+          <view wx:if="{{categoryType === 'flash_point'}}" class="value-content-optimized">
+            <view class="value-main">
+              <text class="value-number-optimized">{{item.flash_point_celsius || '-'}}</text>
+              <text class="value-unit-optimized" wx:if="{{item.flash_point_celsius}}">℃</text>
+            </view>
+            <text class="value-label">闪点</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- ENHANCED: Hazard Properties Display -->
+      <view class="hazard-property-display-enhanced" wx:if="{{categoryType.indexOf('hazard_') === 0}}">
+        <!-- Primary Hazard Alert -->
+        <view class="hazard-primary-alert {{categoryType}}-alert">
+          <view class="hazard-alert-content">
+            <view class="hazard-icon-container">
+              <text class="hazard-main-icon">⚠️</text>
+              <view class="hazard-pulse-ring"></view>
+            </view>
+            <view class="hazard-alert-text">
+              <text class="hazard-title">{{getCategoryTitle(categoryType)}}</text>
+              <text class="hazard-subtitle">危险废物特征</text>
+            </view>
+            <view class="hazard-severity-badge {{categoryType}}-severity">
+              <text class="severity-text">高危</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- Hazard Details Section -->
+        <view class="hazard-details-section">
+          <view class="hazard-section-header">
+            <text class="section-title">化学成分分析</text>
+            <view class="section-divider"></view>
+          </view>
+          
+          <!-- Enhanced Element Composition Display -->
+          <view class="hazard-elements-container">
+            <view class="hazard-element-card" wx:if="{{item.c_percent}}">
+              <view class="element-icon-bg carbon-bg">
+                <text class="element-symbol">C</text>
+              </view>
+              <view class="element-info">
+                <text class="element-value">{{item.c_percent}}</text>
+                <text class="element-unit">%</text>
+              </view>
+            </view>
+            
+            <view class="hazard-element-card" wx:if="{{item.h_percent}}">
+              <view class="element-icon-bg hydrogen-bg">
+                <text class="element-symbol">H</text>
+              </view>
+              <view class="element-info">
+                <text class="element-value">{{item.h_percent}}</text>
+                <text class="element-unit">%</text>
+              </view>
+            </view>
+            
+            <view class="hazard-element-card" wx:if="{{item.o_percent}}">
+              <view class="element-icon-bg oxygen-bg">
+                <text class="element-symbol">O</text>
+              </view>
+              <view class="element-info">
+                <text class="element-value">{{item.o_percent}}</text>
+                <text class="element-unit">%</text>
+              </view>
+            </view>
+            
+            <view class="hazard-element-card" wx:if="{{item.n_percent}}">
+              <view class="element-icon-bg nitrogen-bg">
+                <text class="element-symbol">N</text>
+              </view>
+              <view class="element-info">
+                <text class="element-value">{{item.n_percent}}</text>
+                <text class="element-unit">%</text>
+              </view>
+            </view>
+            
+            <view class="hazard-element-card" wx:if="{{item.s_percent}}">
+              <view class="element-icon-bg sulfur-bg">
+                <text class="element-symbol">S</text>
+              </view>
+              <view class="element-info">
+                <text class="element-value">{{item.s_percent}}</text>
+                <text class="element-unit">%</text>
+              </view>
+            </view>
+            
+            <view class="hazard-element-card" wx:if="{{item.p_percent}}">
+              <view class="element-icon-bg phosphorus-bg">
+                <text class="element-symbol">P</text>
+              </view>
+              <view class="element-info">
+                <text class="element-value">{{item.p_percent}}</text>
+                <text class="element-unit">%</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- Safety Warning Footer -->
+        <view class="hazard-safety-footer">
+          <text class="safety-warning-icon">🛡️</text>
+          <text class="safety-warning-text">请严格按照危废处理规范进行操作</text>
+        </view>
+      </view>
+      
+      <!-- Multi Value Properties -->
+      <view class="multi-value-display" wx:else>
+        <!-- Elements Grid -->
+        <view class="properties-grid elements-grid" wx:if="{{categoryType === 'elements'}}">
+          <view class="property-item" wx:if="{{item.c_percent}}">
+            <text class="prop-name">C</text>
+            <text class="prop-value">{{item.c_percent}}</text>
+            <text class="prop-unit">%</text>
+          </view>
+          <view class="property-item" wx:if="{{item.h_percent}}">
+            <text class="prop-name">H</text>
+            <text class="prop-value">{{item.h_percent}}</text>
+            <text class="prop-unit">%</text>
+          </view>
+          <view class="property-item" wx:if="{{item.o_percent}}">
+            <text class="prop-name">O</text>
+            <text class="prop-value">{{item.o_percent}}</text>
+            <text class="prop-unit">%</text>
+          </view>
+          <view class="property-item" wx:if="{{item.n_percent}}">
+            <text class="prop-name">N</text>
+            <text class="prop-value">{{item.n_percent}}</text>
+            <text class="prop-unit">%</text>
+          </view>
+          <view class="property-item" wx:if="{{item.s_percent}}">
+            <text class="prop-name">S</text>
+            <text class="prop-value">{{item.s_percent}}</text>
+            <text class="prop-unit">%</text>
+          </view>
+          <view class="property-item" wx:if="{{item.p_percent}}">
+            <text class="prop-name">P</text>
+            <text class="prop-value">{{item.p_percent}}</text>
+            <text class="prop-unit">%</text>
+          </view>
+          <view class="property-item" wx:if="{{item.cl_percent}}">
+            <text class="prop-name">Cl</text>
+            <text class="prop-value">{{item.cl_percent}}</text>
+            <text class="prop-unit">%</text>
+          </view>
+          <view class="property-item" wx:if="{{item.f_percent}}">
+            <text class="prop-name">F</text>
+            <text class="prop-value">{{item.f_percent}}</text>
+            <text class="prop-unit">%</text>
+          </view>
+        </view>
+        
+        <!-- Heavy Metals Grid -->
+        <view class="properties-grid heavy-metals-grid" wx:if="{{categoryType === 'heavy_metals'}}">
+          <view class="property-item" wx:if="{{item.fe_mg_per_l !== null && item.fe_mg_per_l !== undefined}}">
+            <text class="prop-name">Fe</text>
+            <text class="prop-value">{{item.fe_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.cu_mg_per_l !== null && item.cu_mg_per_l !== undefined}}">
+            <text class="prop-name">Cu</text>
+            <text class="prop-value">{{item.cu_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.pb_mg_per_l !== null && item.pb_mg_per_l !== undefined}}">
+            <text class="prop-name">Pb</text>
+            <text class="prop-value">{{item.pb_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.cd_mg_per_l !== null && item.cd_mg_per_l !== undefined}}">
+            <text class="prop-name">Cd</text>
+            <text class="prop-value">{{item.cd_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.cr_mg_per_l !== null && item.cr_mg_per_l !== undefined}}">
+            <text class="prop-name">Cr</text>
+            <text class="prop-value">{{item.cr_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.ni_mg_per_l !== null && item.ni_mg_per_l !== undefined}}">
+            <text class="prop-name">Ni</text>
+            <text class="prop-value">{{item.ni_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.as_mg_per_l !== null && item.as_mg_per_l !== undefined}}">
+            <text class="prop-name">As</text>
+            <text class="prop-value">{{item.as_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.mn_mg_per_l !== null && item.mn_mg_per_l !== undefined}}">
+            <text class="prop-name">Mn</text>
+            <text class="prop-value">{{item.mn_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.sn_mg_per_l !== null && item.sn_mg_per_l !== undefined}}">
+            <text class="prop-name">Sn</text>
+            <text class="prop-value">{{item.sn_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.co_mg_per_l !== null && item.co_mg_per_l !== undefined}}">
+            <text class="prop-name">Co</text>
+            <text class="prop-value">{{item.co_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.sb_mg_per_l !== null && item.sb_mg_per_l !== undefined}}">
+            <text class="prop-name">Sb</text>
+            <text class="prop-value">{{item.sb_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item" wx:if="{{item.tl_mg_per_l !== null && item.tl_mg_per_l !== undefined}}">
+            <text class="prop-name">Tl</text>
+            <text class="prop-value">{{item.tl_mg_per_l}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+        </view>
+        
+        <!-- Alkali Metals Grid -->
+        <view class="properties-grid alkali-metals-grid" wx:if="{{categoryType === 'alkali_metals'}}">
+          <view class="property-item {{item.k_mg_per_l ? '' : 'zero-value'}}">
+            <text class="prop-name">K</text>
+            <text class="prop-value">{{item.k_mg_per_l || '0'}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item {{item.na_mg_per_l ? '' : 'zero-value'}}">
+            <text class="prop-name">Na</text>
+            <text class="prop-value">{{item.na_mg_per_l || '0'}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+          <view class="property-item {{item.mg_mg_per_l ? '' : 'zero-value'}}">
+            <text class="prop-name">Mg</text>
+            <text class="prop-value">{{item.mg_mg_per_l || '0'}}</text>
+            <text class="prop-unit">mg/L</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- ENHANCED: Empty State for All Categories -->
+  <view class="empty-state-enhanced" wx:elif="{{!loading && filteredData.length === 0}}">
+    <!-- Hazard Properties Empty State -->
+    <view class="hazard-empty-state" wx:if="{{categoryType.indexOf('hazard_') === 0}}">
+      <view class="hazard-empty-container">
+        <view class="hazard-empty-icon-container">
+          <text class="hazard-empty-icon">🔍</text>
+          <view class="search-pulse-ring"></view>
+        </view>
+        
+        <view class="hazard-empty-content">
+          <text class="hazard-empty-title">暂无{{getCategoryTitle(categoryType)}}废物</text>
+          <text class="hazard-empty-subtitle" wx:if="{{searchText}}">
+            未找到包含"{{searchText}}"的{{getCategoryTitle(categoryType)}}危废数据
+          </text>
+          <text class="hazard-empty-subtitle" wx:else>
+            当前数据库中暂无具有{{getCategoryTitle(categoryType)}}特征的危废记录
+          </text>
+        </view>
+
+        <view class="hazard-empty-suggestions">
+          <view class="suggestion-header">
+            <text class="suggestion-title">建议操作</text>
+          </view>
+          <view class="suggestion-list">
+            <view class="suggestion-item" wx:if="{{searchText}}">
+              <text class="suggestion-icon">🔄</text>
+              <text class="suggestion-text">清空搜索条件查看所有数据</text>
+            </view>
+            <view class="suggestion-item">
+              <text class="suggestion-icon">📂</text>
+              <text class="suggestion-text">尝试查看其他危险特性分类</text>
+            </view>
+            <view class="suggestion-item">
+              <text class="suggestion-icon">📞</text>
+              <text class="suggestion-text">联系管理员添加相关数据</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="hazard-empty-safety-note">
+          <text class="safety-note-icon">⚠️</text>
+          <text class="safety-note-text">即使暂无数据，仍需按危废处理规范操作</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Traditional Properties Empty State -->
+    <view class="traditional-empty-state" wx:else>
+      <view class="traditional-empty-container">
+        <view class="traditional-empty-icon-container">
+          <text class="traditional-empty-icon">📊</text>
+          <view class="data-pulse-ring"></view>
+        </view>
+        
+        <view class="traditional-empty-content">
+          <text class="traditional-empty-title">
+            {{searchText ? '未找到匹配数据' : '暂无数据'}}
+          </text>
+          <text class="traditional-empty-subtitle" wx:if="{{searchText}}">
+            未找到包含"{{searchText}}"的{{getCategoryTitle(categoryType)}}数据
+          </text>
+          <text class="traditional-empty-subtitle" wx:else>
+            当前分类暂无{{getCategoryTitle(categoryType)}}数据
+          </text>
+        </view>
+
+        <view class="traditional-empty-suggestions">
+          <view class="suggestion-item" wx:if="{{searchText}}">
+            <text class="suggestion-icon">🔄</text>
+            <text class="suggestion-text">尝试其他搜索关键词</text>
+          </view>
+        </view>
+
+        <view class="debug-info" wx:if="{{originalData.length > 0}}">
+          <text class="debug-text">已加载 {{originalData.length}} 条原始数据，过滤后为空</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

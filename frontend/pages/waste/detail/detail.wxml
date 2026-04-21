@@ -1,0 +1,69 @@
+<view class="container">
+  <!-- Header with waste name and storage -->
+  <view class="waste-header">
+    <view class="title-section">
+      <text class="waste-name">{{wasteDetail.wasteName}}</text>
+      <view class="waste-code">{{wasteDetail.wasteCode}}</view>
+    </view>
+    
+    <view class="storage-info storage-{{wasteDetail.storageStatus}}" 
+          style="background-color: {{wasteDetail.storageBgColor}}; border: 1px solid {{wasteDetail.storageBorderColor}};">
+      <text class="storage-label">剩余库存</text>
+      <text class="storage-amount" style="color: {{wasteDetail.storageTextColor}};">
+        {{wasteDetail.remainingStorageDisplay}}
+      </text>
+    </view>
+  </view>
+
+  <!-- Section 1: Basic Info -->
+  <view class="section">
+    <view class="section-title">基础信息</view>
+    <view class="info-card">
+      <view class="basic-info-row">
+        <text class="basic-info-label">来源单位</text>
+        <text class="basic-info-value">{{wasteDetail.sourceUnit || '-'}}</text>
+      </view>
+      <view class="basic-info-row">
+        <text class="basic-info-label">贮存位置</text>
+        <text class="basic-info-value">{{wasteDetail.storageLocation || '-'}}</text>
+      </view>
+      <view class="basic-info-row">
+        <text class="basic-info-label">进料方式</text>
+        <text class="basic-info-value">{{wasteDetail.feedingMethod || '-'}}</text>
+      </view>
+      <view class="basic-info-row">
+        <text class="basic-info-label">入库时间</text>
+        <text class="basic-info-value">{{wasteDetail.inboundTime || '-'}}</text>
+      </view>
+      <view class="basic-info-row">
+        <text class="basic-info-label">外观特征</text>
+        <text class="basic-info-value">{{wasteDetail.appearance || '-'}}</text>
+      </view>
+      <view class="basic-info-row">
+        <text class="basic-info-label">有害成分</text>
+        <text class="basic-info-value">{{wasteDetail.harmfulComponents || '-'}}</text>
+      </view>
+      <view class="basic-info-row">
+        <text class="basic-info-label">物理状态</text>
+        <text class="basic-info-value">{{wasteDetail.physicalState || '固态'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Section 6: Properties -->
+  <view class="section">
+    <view class="section-title">特性信息</view>
+    <view class="properties-grid">
+      <view class="property-item {{item.value ? 'active' : ''}}" 
+            wx:for="{{propertyList}}" wx:key="key" wx:for-item="item">
+        <view class="property-left">
+          <text class="property-icon">{{item.icon}}</text>
+          <text class="property-name">{{item.name}}</text>
+        </view>
+        <text class="property-status {{item.value ? 'checked' : 'unchecked'}}">
+          {{item.value ? '✓' : '−'}}
+        </text>
+      </view>
+    </view>
+  </view>
+</view> 

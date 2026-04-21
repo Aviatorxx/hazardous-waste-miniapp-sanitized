@@ -1,0 +1,34 @@
+<view class="waste-card" bindtap="onCardTap">
+  <view class="card-header">
+    <view class="title-section">
+      <view class="waste-title">{{wasteData.wasteName}} <text class="waste-code">{{wasteData.wasteCode}}</text></view>
+    </view>
+    <view class="storage-section">
+      <view class="storage-label">剩余库存</view>
+      <view class="storage-value">{{formatStorage(wasteData.remainingStorage)}}</view>
+    </view>
+  </view>
+  
+  <view class="card-body">
+    <view class="info-row">
+      <text class="label">来源单位:</text>
+      <text class="value">{{wasteData.sourceUnit}}</text>
+    </view>
+    
+    <view class="info-row">
+      <text class="label">贮存位置:</text>
+      <text class="value">-</text>
+    </view>
+    
+    <view class="info-row">
+      <text class="label">外观:</text>
+      <text class="value">{{wasteData.appearance}}</text>
+    </view>
+  </view>
+  
+  <view class="card-footer" wx:if="{{showSelectButton}}">
+    <button class="select-btn" bindtap="onSelectTap" data-selected="{{selected}}">
+      {{selected ? '已选择' : '选择'}}
+    </button>
+  </view>
+</view>

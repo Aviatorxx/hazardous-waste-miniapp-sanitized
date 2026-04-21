@@ -1,0 +1,16 @@
+<view class="waste-search-container">
+  <view class="waste-search-box">
+    <icon class="search-icon" type="search" size="20" color="#999"/>
+    <input 
+      class="waste-search-input"
+      placeholder="{{placeholder}}"
+      value="{{value}}"
+      bindinput="onInput"
+      bindconfirm="onConfirm"
+      confirm-type="search"
+    />
+    <view wx:if="{{value}}" class="clear-btn" bindtap="onClear">
+      <icon type="clear" size="16" color="#999"/>
+    </view>
+  </view>
+</view> 

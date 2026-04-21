@@ -1,0 +1,193 @@
+<!--pages/compatibility/calculation-results/calculation-results.wxml-->
+<view class="container">
+  <!-- Loading State -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- Results Content -->
+  <view wx:if="{{!loading && calculationResults}}" class="results-content">
+    
+    <!-- Success Results -->
+    <view wx:if="{{calculationSuccess}}" class="success-results">
+      <!-- Success Summary -->
+      <view class="result-summary success">
+        <view class="summary-header">
+          <view class="result-status success">
+            <text class="status-icon">✓</text>
+            <text class="status-text">配伍计算成功</text>
+          </view>
+          <text wx:if="{{calculationResults.calculationTime}}" class="calculation-time">
+            计算时间: {{calculationResults.calculationTime}}
+          </text>
+        </view>
+
+
+      </view>
+
+
+
+      <!-- Mixed Substance Indicators Section -->
+      <view wx:if="{{constraintParametersArray && constraintParametersArray.length > 0}}" class="indicators-section">
+        <view class="section-header">
+          <text class="section-title">配伍后混合物指标</text>
+          <text class="section-count">11</text>
+        </view>
+        
+        <!-- Indicators Table -->
+        <view class="indicators-table">
+          <!-- Table Header -->
+          <view class="table-header">
+            <text class="header-cell parameter-col">受控组分</text>
+            <text class="header-cell target-col">限制值</text>
+            <text class="header-cell actual-col">实际值</text>
+            <text class="header-cell status-col">状态</text>
+          </view>
+          
+          <!-- Table Rows -->
+          <view 
+            wx:for="{{constraintParametersArray}}" 
+            wx:key="parameter" 
+            class="table-row"
+          >
+            <text class="table-cell parameter-col">{{item.parameter}}</text>
+            <text class="table-cell target-col">{{item.limit}}</text>
+            <text class="table-cell actual-col passed">{{item.actualValue}}</text>
+            <text class="table-cell status-col status-passed">{{item.status}}</text>
+          </view>
+        </view>
+        
+
+      </view>
+
+
+    </view>
+
+    <!-- Failure Results -->
+    <view wx:else class="failure-results">
+      <!-- Failure Summary -->
+      <view class="result-summary failed">
+        <view class="summary-header">
+          <view class="result-status failed">
+            <text class="status-icon">!</text>
+            <text class="status-text">配伍失败</text>
+          </view>
+          <text wx:if="{{calculationResults.calculationTime}}" class="calculation-time">
+            计算时间: {{calculationResults.calculationTime}}
+          </text>
+        </view>
+
+        <view wx:if="{{calculationResults.message}}" class="result-message failed">
+          <text class="message-text">{{calculationResults.message}}</text>
+        </view>
+      </view>
+
+      <!-- Consolidated Failure Analysis -->
+      <view class="failure-analysis-section">
+        <view class="section-header">
+          <text class="section-title">失败原因分析</text>
+          <text class="section-subtitle">Detailed Failure Analysis</text>
+        </view>
+        
+        <!-- Constraint Violations -->
+        <view wx:if="{{constraintViolations.length > 0}}" class="failure-category">
+          <view class="category-header">
+            <text class="category-title">约束条件违反</text>
+            <text class="category-count">{{constraintViolations.length}}</text>
+          </view>
+          <view class="violations-list">
+            <view wx:for="{{constraintViolations}}" wx:key="*this" class="violation-item">
+              <text class="violation-text">• {{item}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- Stock Insufficiency -->
+        <view wx:if="{{failureReasons.stockInsufficiency}}" class="failure-category">
+          <view class="category-header">
+            <text class="category-title">库存不足</text>
+          </view>
+          <view class="stock-issues">
+            <view wx:for="{{failureReasons.stockInsufficiency}}" wx:key="wasteId" class="stock-issue-item">
+              <text class="waste-code">{{item.wasteCode}}</text>
+              <text class="issue-desc">需要: {{item.required}}kg，可用: {{item.available}}kg</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- Compatibility Issues -->
+        <view wx:if="{{failureReasons.compatibilityIssues}}" class="failure-category">
+          <view class="category-header">
+            <text class="category-title">相容性问题</text>
+          </view>
+          <view class="compatibility-issues">
+            <text wx:for="{{failureReasons.compatibilityIssues}}" wx:key="*this" class="issue-item">
+              • {{item}}
+            </text>
+          </view>
+        </view>
+
+        <!-- Parameter Exceeds -->
+        <view wx:if="{{failureReasons.parameterExceeds}}" class="failure-category">
+          <view class="category-header">
+            <text class="category-title">参数超限</text>
+          </view>
+          <view class="parameter-issues">
+            <view wx:for="{{failureReasons.parameterExceeds}}" wx:key="parameter" class="parameter-issue-item">
+              <text class="parameter-name">{{item.parameterName}}</text>
+              <text class="parameter-values">限制: {{item.limit}}，实际: {{item.actual}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Constraint Results (Common for both success and failure) -->
+    <view wx:if="{{calculationResults.constraintResults && calculationResults.constraintResults.length > 0}}" class="constraints-section">
+      <view class="section-header">
+        <text class="section-title">约束检查</text>
+        <text class="section-count">{{calculationResults.constraintResults.length}}</text>
+      </view>
+      
+      <view class="constraints-list">
+        <view 
+          wx:for="{{calculationResults.constraintResults}}" 
+          wx:key="index" 
+          class="constraint-item {{item.passed ? 'passed' : 'failed'}}"
+          bindtap="onShowConstraintDetail"
+          data-constraint="{{item}}"
+        >
+          <view class="constraint-header">
+            <text class="constraint-name">{{item.constraintName}}</text>
+            <view class="constraint-status {{item.passed ? 'passed' : 'failed'}}">
+              <text class="status-icon">{{item.passed ? '✓' : '✗'}}</text>
+              <text class="status-text">{{getConstraintStatusText(item.passed)}}</text>
+            </view>
+          </view>
+          
+          <view class="constraint-values">
+            <text class="value-item">期望: {{item.expectedValue}}</text>
+            <text class="value-item">实际: {{item.actualValue}}</text>
+          </view>
+          
+          <text wx:if="{{item.description}}" class="constraint-desc">{{item.description}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Return Button -->
+    <view class="action-section">
+      <button class="action-btn return-btn" bindtap="onReturn">
+        返回主页
+      </button>
+    </view>
+  </view>
+
+  <!-- Empty State -->
+  <view wx:if="{{!loading && !calculationResults}}" class="empty-state">
+    <image class="empty-icon" src="../../../assets/icons/error.png" mode="aspectFit" />
+    <text class="empty-text">暂无计算结果</text>
+    <text class="empty-desc">请先完成配伍计算</text>
+    <button class="empty-btn" bindtap="onReturn">返回主页</button>
+  </view>
+</view>

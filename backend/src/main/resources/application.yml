@@ -1,0 +1,193 @@
+server:
+  port: 8080  # 应用服务 WEB 访问端口
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: hwtttt-system
+  
+  # 数据源配置
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/hazardous_waste?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:your_username}
+    password: ${DB_PASSWORD:your_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      # 连接池配置
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: HikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  
+  # Redis配置（当前禁用，使用Caffeine本地缓存）
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    timeout: 10000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+  
+  # 缓存配置
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=30m
+  
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+  
+  # Jackson配置
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+    property-naming-strategy: LOWER_CAMEL_CASE
+    default-property-inclusion: NON_NULL
+
+# MyBatis Plus配置
+mybatis-plus:
+  # 实体扫描，多个package用逗号或者分号分隔
+  type-aliases-package: org.gsu.hwtttt.entity
+  # 配置
+  configuration:
+    # 是否开启自动驼峰命名规则映射
+    map-underscore-to-camel-case: true
+    # 开启二级缓存
+    cache-enabled: true
+    # 打印sql
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 主键类型
+      id-type: ASSIGN_ID
+      # 逻辑删除配置
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      # 乐观锁字段名（注意：需要在实体类中添加@Version注解）
+      # version-column-name: version
+
+# Springdoc OpenAPI 3配置
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+# 日志配置
+logging:
+  level:
+    org.gsu.hwtttt: DEBUG
+    org.springframework.web: DEBUG
+    com.baomidou.mybatisplus: DEBUG
+  pattern:
+    console: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{36} - %msg%n"
+    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n'
+  logback:
+    rollingpolicy:
+      # 日志文件路径
+      file-name-pattern: logs/hwtttt.%d{yyyy-MM-dd}.%i.log
+      # 单个日志文件最大大小
+      max-file-size: 10MB
+      # 保留历史日志文件数量
+      max-history: 30
+      # 所有日志文件总大小限制
+      total-size-cap: 1GB
+
+# 自定义业务配置
+hwtttt:
+  # 缓存配置
+  cache:
+    enabled: true
+    default-expire-time: 1800
+  
+  # 安全配置
+  security:
+    # API访问频率限制(每分钟)
+    rate-limit: 100
+    # 是否启用IP白名单
+    ip-whitelist-enabled: false
+  
+  # 文件上传配置
+  file-upload:
+    path: ${FILE_UPLOAD_PATH:../uploads}
+    max-size: 50MB
+    allowed-extensions: .jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv
+    access-url: ${FILE_ACCESS_URL:http://localhost:8080}
+  
+  # 热力学分析图片配置
+  thermal-images:
+    base-path: src/main/resources/static/thermal-images
+    access-url-prefix: /thermal-images
+    max-file-size: 20MB
+    allowed-types: .jpg,.jpeg,.png
+    subdirectories:
+      ftir: FTIR
+      tg-dsc: TG-DSC
+      xrf: XRF
+      gc-ms: GC-MS
+
+# 微信小程序配置
+wechat:
+  miniapp:
+    # ⚠️ 请替换为你的真实AppID和AppSecret
+    # 建议使用环境变量，避免敏感信息泄露
+    appid: ${WECHAT_MINIAPP_APPID:your_appid}
+    secret: ${WECHAT_MINIAPP_SECRET:your_app_secret}
+    # appid: your_appid
+    # secret: your_app_secret
+
+# 文件上传配置（自定义配置，需要对应的@ConfigurationProperties类）
+# file:
+#   upload:
+#     # 开发环境：在项目根目录外创建uploads目录
+#     # 这样不会与源代码混在一起，也不会被git跟踪
+#     path: ${FILE_UPLOAD_PATH:../uploads}
+#     max-size: 50MB
+#     allowed-extensions: .jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv
+#   access:
+#     # 开发环境访问地址
+#     url: ${FILE_ACCESS_URL:http://localhost:8080}
+
+# Swagger配置（Springfox已配置在knife4j中，此配置可能重复）
+# springfox:
+#   documentation:
+#     swagger-ui:
+#       enabled: true
+
+app:
+  thermal:
+    image:
+      storage-path: src/main/resources/static/thermal-images/
+      base-url: /api/thermal-properties/image/
+      max-size: 10485760
+      allowed-types: image/jpeg,image/png,image/jpg
+      allowed-extensions: .jpg,.jpeg,.png
+      subdirectories:
+        FTIR: FTIR
+        TG_DSC: TG-DSC
+        XRF: XRF
+        GC_MS: GC-MS

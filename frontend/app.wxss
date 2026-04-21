@@ -1,0 +1,172 @@
+/**app.wxss**/
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}
+
+/* Global Styles */
+page {
+  background-color: #f5f5f5;
+  font-family: -apple-system-font, Helvetica Neue, Helvetica, sans-serif;
+}
+
+/* Blue gradient theme */
+.gradient-bg {
+  background: linear-gradient(135deg, #4A90E2 0%, #7B68EE 100%);
+}
+
+.primary-color {
+  color: #4A90E2;
+}
+
+.secondary-color {
+  color: #7B68EE;
+}
+
+/* Common card styles */
+.card {
+  background: white;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* Common button styles */
+.btn-primary {
+  background: linear-gradient(135deg, #4A90E2 0%, #7B68EE 100%);
+  color: white;
+  border: none;
+  border-radius: 8rpx;
+  padding: 16rpx 32rpx;
+  font-size: 28rpx;
+}
+
+.btn-secondary {
+  background: white;
+  color: #4A90E2;
+  border: 2rpx solid #4A90E2;
+  border-radius: 8rpx;
+  padding: 16rpx 32rpx;
+  font-size: 28rpx;
+}
+
+/* Search styles - removed to avoid conflicts with components */
+
+/* Tag styles */
+.tag {
+  display: inline-block;
+  padding: 8rpx 16rpx;
+  margin: 4rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  color: white;
+}
+
+.tag-flammable {
+  background: #ff6b6b;
+}
+
+.tag-toxic {
+  background: #ffa726;
+}
+
+.tag-corrosive {
+  background: #ab47bc;
+}
+
+.tag-reactive {
+  background: #26a69a;
+}
+
+/* Grid layout */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20rpx;
+}
+
+.grid-item {
+  width: calc(50% - 20rpx);
+  margin: 10rpx;
+}
+
+/* Progress indicator */
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 20rpx;
+}
+
+.progress-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.progress-step.active .progress-circle {
+  background: #4A90E2;
+  color: white;
+}
+
+.progress-circle {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16rpx;
+  font-size: 24rpx;
+}
+
+.progress-line {
+  position: absolute;
+  top: 30rpx;
+  left: 50%;
+  width: 100%;
+  height: 2rpx;
+  background: #e0e0e0;
+  z-index: -1;
+}
+
+.progress-step.active .progress-line {
+  background: #4A90E2;
+}
+
+/* Utility classes */
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: #4A90E2;
+}
+
+.text-secondary {
+  color: #666;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.mt-20 {
+  margin-top: 20rpx;
+}
+
+.mb-20 {
+  margin-bottom: 20rpx;
+}
+
+.p-20 {
+  padding: 20rpx;
+} 

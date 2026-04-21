@@ -1,0 +1,35 @@
+/* Waste Directory Search Bar Component Styles */
+.waste-search-container {
+  padding: 20rpx 0;
+  background: #f8f8f8;
+}
+
+.waste-search-box {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  border-radius: 24rpx;
+  padding: 0 32rpx;
+  height: 64rpx;
+  position: relative;
+  margin: 0 32rpx;
+}
+
+.search-icon {
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.waste-search-input {
+  flex: 1;
+  font-size: 26rpx;
+  height: 100%;
+  background: transparent;
+  color: #999;
+}
+
+.clear-btn {
+  margin-left: 16rpx;
+  padding: 8rpx;
+  flex-shrink: 0;
+} 

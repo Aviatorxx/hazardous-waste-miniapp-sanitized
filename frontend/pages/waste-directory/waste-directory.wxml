@@ -1,0 +1,38 @@
+<view class="container">
+  <!-- Search Bar -->
+  <search-bar 
+    placeholder="搜索危废代码或名称"
+    bind:input="onSearchInput"
+    bind:search="onSearch"
+    bind:clear="onSearchClear"
+  />
+  
+  <!-- Waste Count -->
+  <view class="count-info">
+    <text class="count-text">共找到 {{filteredWasteList.length}} 项危废</text>
+  </view>
+  
+  <!-- Waste List -->
+  <scroll-view class="waste-list" scroll-y="true" enhanced="true">
+    <view wx:for="{{filteredWasteList}}" wx:key="id" class="waste-item">
+      <waste-card
+        waste-data="{{item}}"
+        show-select-button="{{false}}"
+        bind:cardtap="onWasteCardTap"
+      />
+    </view>
+    
+    <!-- Empty State -->
+    <view wx:if="{{filteredWasteList.length === 0}}" class="empty-state">
+      <view class="empty-icon">🔍</view>
+      <view class="empty-text">未找到相关危废信息</view>
+      <view class="empty-hint">请尝试其他关键词</view>
+    </view>
+  </scroll-view>
+  
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+</view> 

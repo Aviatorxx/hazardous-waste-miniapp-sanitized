@@ -1,0 +1,12 @@
+<view wx:if="{{show}}" class="image-viewer-modal" bindtap="closeViewer">
+  <view class="modal-content" catchtap="">
+    <image src="{{currentImage.imageUrl}}" class="full-image" mode="aspectFit" />
+    <view class="image-details">
+      <text class="detail-item">测试名称: {{currentImage.testName}}</text>
+      <text class="detail-item">测试日期: {{currentImage.testDate}}</text>
+      <text class="detail-item">测试机构: {{currentImage.testLab}}</text>
+      <text class="detail-item">质量等级: {{currentImage.qualityGrade}}</text>
+    </view>
+    <button class="close-btn" bindtap="closeViewer">关闭</button>
+  </view>
+</view> 

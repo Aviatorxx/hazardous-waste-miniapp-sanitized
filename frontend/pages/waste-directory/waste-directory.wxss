@@ -1,0 +1,129 @@
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8f8f8;
+}
+
+.count-info {
+  padding: 20rpx 32rpx;
+  background: white;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: none; /* Hide count info to match the image */
+}
+
+.count-text {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.waste-list {
+  flex: 1;
+  padding-bottom: 120rpx; /* Account for tab bar */
+  background: #f8f8f8;
+}
+
+.waste-item {
+  margin: 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 40rpx;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 40rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.empty-hint {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.loading-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 40rpx;
+  border-radius: 16rpx;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-top: 4rpx solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+.loading-text {
+  font-size: 24rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 🚨 DIRECT STYLING BACKUP - IF COMPONENTS FAIL 🚨 */
+.direct-waste-card {
+  background: white !important;
+  border-radius: 16rpx !important;
+  margin: 20rpx !important;
+  padding: 30rpx !important;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.15) !important;
+  border: 2rpx solid #e0e0e0 !important;
+}
+
+.direct-title {
+  font-size: 36rpx !important;
+  font-weight: bold !important;
+  color: #333 !important;
+  margin-bottom: 20rpx !important;
+  line-height: 1.4 !important;
+}
+
+.direct-info {
+  font-size: 28rpx !important;
+  color: #666 !important;
+  margin-bottom: 12rpx !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+}
+
+.direct-info .label {
+  font-weight: 500 !important;
+  color: #5f6368 !important;
+  min-width: 120rpx !important;
+}
+
+.direct-info .value {
+  flex: 1 !important;
+  color: #202124 !important;
+  text-align: right !important;
+}
+
+ 

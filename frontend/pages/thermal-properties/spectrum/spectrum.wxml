@@ -1,0 +1,166 @@
+<view class="container">
+  <!-- Search Section -->
+  <view class="search-section">
+    <view class="search-bar">
+      <input class="search-input" 
+             placeholder="输入危废代码或名称搜索" 
+             value="{{keyword}}"
+             bindinput="onKeywordInput"
+             bindconfirm="onSearch" />
+      <button class="search-btn" bindtap="onSearch" disabled="{{loading}}">
+        {{loading ? '搜索中' : '搜索'}}
+      </button>
+    </view>
+  </view>
+  
+  <!-- Loading State -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">数据加载中...</text>
+  </view>
+  
+  <!-- Content -->
+  <view wx:else class="content">
+    <!-- Waste List -->
+    <view wx:if="{{wasteList.length > 0}}" class="waste-list">
+      <view wx:for="{{wasteList}}" wx:key="wasteId" wx:for-index="wasteIndex" 
+            class="waste-card {{wasteIndex % 2 === 0 ? 'card-even' : 'card-odd'}}"
+            style="animation-delay: {{wasteIndex * 0.1}}s">
+        
+        <!-- Enhanced Section Header -->
+        <view class="section-header">
+          <view class="header-gradient">
+            <view class="waste-info-primary">
+              <text class="waste-code-large">{{item.wasteCode}}</text>
+              <text class="waste-name-large">{{item.wasteName}}</text>
+            </view>
+            <view class="header-metadata">
+              <text class="source-unit">{{item.sourceUnit}}</text>
+            </view>
+          </view>
+          <text class="analysis-type-badge">FTIR红外光谱分析</text>
+        </view>
+        
+        <!-- Enhanced Images Grid -->
+        <view class="images-container-enhanced">
+          <view wx:for="{{item.images}}" wx:key="id" wx:for-item="image" wx:for-index="imageIndex"
+                class="image-card-enhanced" 
+                bindtap="onImageTap" 
+                data-image="{{image}}"
+                data-waste-index="{{wasteIndex}}"
+                data-image-index="{{imageIndex}}">
+            
+            <view class="image-wrapper-enhanced">
+              <image src="{{image.imageUrl}}" 
+                     class="spectrum-image-enhanced" 
+                     mode="aspectFit"
+                     lazy-load="{{true}}"
+                     binderror="onImageError" />
+              
+              <!-- Enhanced overlay with better styling -->
+              <view class="image-overlay-enhanced">
+                <view class="overlay-content">
+                  <text class="view-icon-enhanced">🔍</text>
+                  <text class="preview-hint-enhanced">点击查看详情</text>
+                </view>
+              </view>
+              
+
+            </view>
+            
+            <!-- Enhanced image caption with metadata -->
+            <view class="image-caption-enhanced">
+              <view class="caption-primary">
+                <text class="test-name-enhanced">{{image.testName}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- Enhanced Browse All Button -->
+        <view wx:if="{{item.images.length > 1}}" class="browse-all-container-enhanced">
+          <button class="browse-all-btn-enhanced" 
+                  bindtap="previewAllImages" 
+                  data-start-image-url="{{item.images[0].imageUrl}}">
+            <text class="browse-icon-enhanced">📱</text>
+            <text class="browse-text">浏览全部光谱图</text>
+            <text class="browse-count">({{item.images.length}}张)</text>
+            <text class="browse-arrow">→</text>
+          </button>
+        </view>
+      </view>
+    </view>
+    
+    <!-- Enhanced Empty State -->
+    <view wx:else class="empty-state-enhanced">
+      <view class="empty-animation">
+        <text class="empty-icon-enhanced">📊</text>
+      </view>
+      <text class="empty-title-enhanced">{{emptyMessage}}</text>
+      <text class="empty-desc-enhanced">暂无FTIR红外光谱分析数据</text>
+      <view class="empty-suggestions">
+        <text class="suggestion-text">建议:</text>
+        <text class="suggestion-item">• 检查危废代码是否正确</text>
+        <text class="suggestion-item">• 尝试使用危废名称搜索</text>
+        <text class="suggestion-item">• 联系管理员添加数据</text>
+      </view>
+      <button wx:if="{{keyword}}" class="clear-search-btn-enhanced" bindtap="clearSearch">
+        <text class="clear-icon">✕</text>
+        <text>清除搜索条件</text>
+      </button>
+    </view>
+  </view>
+  
+  <!-- Floating Action Button -->
+  <view class="floating-action-button" bindtap="scrollToTop">
+    <text class="fab-icon">↑</text>
+  </view>
+  
+  <!-- Enhanced Image Viewer Modal -->
+  <view wx:if="{{showImageViewer}}" class="image-viewer-modal-enhanced" bindtap="closeImageViewer">
+    <view class="modal-container-enhanced" catchtap="">
+      <view class="modal-header-enhanced">
+        <view class="modal-title-section-enhanced">
+          <text class="modal-waste-code-enhanced">{{currentImage.wasteCode}}</text>
+          <text class="modal-waste-name-enhanced">{{currentImage.wasteName}}</text>
+          <text class="modal-analysis-type">FTIR红外光谱分析</text>
+        </view>
+        <button class="modal-close-btn-enhanced" bindtap="closeImageViewer">
+          <text class="close-icon-enhanced">✕</text>
+        </button>
+      </view>
+      
+      <view class="modal-body-enhanced">
+        <view class="image-container-enhanced">
+          <image src="{{currentImage.imageUrl}}" 
+                 class="modal-image-enhanced" 
+                 mode="aspectFit"
+                 binderror="onModalImageError" />
+        </view>
+        
+        <view class="image-info-panel-enhanced">
+          <view class="info-section">
+            <text class="info-section-title">分析详情</text>
+            <view class="info-row-enhanced">
+              <text class="info-label-enhanced">分析类型</text>
+              <text class="info-value-enhanced">{{currentImage.testName}}</text>
+            </view>
+            <view class="info-row-enhanced">
+              <text class="info-label-enhanced">测试时间</text>
+              <text class="info-value-enhanced">2024年1月</text>
+            </view>
+            <view class="info-row-enhanced">
+              <text class="info-label-enhanced">数据质量</text>
+              <text class="info-value-enhanced status-good">优秀</text>
+            </view>
+          </view>
+          
+          <view wx:if="{{currentImage.remark}}" class="info-section">
+            <text class="info-section-title">备注信息</text>
+            <text class="remark-text">{{currentImage.remark}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

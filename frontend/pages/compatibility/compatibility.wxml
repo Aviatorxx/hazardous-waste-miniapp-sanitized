@@ -1,0 +1,191 @@
+<view class="container">
+  <!-- Main Function Buttons -->
+  <view class="function-buttons">
+    <view class="button-row">
+      <button 
+        class="function-btn import-btn {{buttonStates.import ? '' : 'disabled'}}" 
+        bindtap="onImport"
+        disabled="{{!buttonStates.import || loading.import}}"
+      >
+        <image class="btn-icon" src="../../assets/images/import.png" mode="aspectFit" />
+        <text class="btn-text">导入</text>
+        <text class="btn-desc">Import</text>
+      </button>
+      
+      <button 
+        class="function-btn compatibility-btn {{buttonStates.compatibility ? '' : 'disabled'}}" 
+        bindtap="onCompatibilityCheck"
+        disabled="{{!buttonStates.compatibility || loading.compatibility}}"
+      >
+        <image class="btn-icon" src="../../assets/images/compatibility.png" mode="aspectFit" />
+        <text class="btn-text">相容性判定</text>
+        <text class="btn-desc">Compatibility Check</text>
+      </button>
+    </view>
+    
+    <view class="button-row">
+      <button 
+        class="function-btn blending-btn {{buttonStates.blending ? '' : 'disabled'}} {{amountStatusClass === 'amount-insufficient' || amountStatusClass === 'amount-excessive' ? 'amount-warning' : 'amount-optimal'}}" 
+        bindtap="onBlending"
+        disabled="{{!buttonStates.blending || loading.blending}}"
+      >
+        <image class="btn-icon" src="../../assets/icons/blending.png" mode="aspectFit" />
+        <text class="btn-text">配伍</text>
+        <text class="btn-desc">Blending</text>
+        
+        <!-- Amount status indicator -->
+        <view wx:if="{{amountStatusClass === 'amount-insufficient' || amountStatusClass === 'amount-excessive'}}" class="amount-warning-indicator">
+          <text class="warning-icon">⚠️</text>
+        </view>
+        <view wx:elif="{{amountStatusClass === 'amount-normal'}}" class="amount-success-indicator">
+          <text class="success-icon">✓</text>
+        </view>
+        
+        <!-- Show success/failure indicator -->
+        <view wx:if="{{calculationAttempted && sessionStatus === 'calculation_success'}}" class="status-indicator success">
+          <text class="status-icon">✓</text>
+        </view>
+        <view wx:elif="{{calculationAttempted && sessionStatus === 'calculation_failed'}}" class="status-indicator failure">
+          <text class="status-icon">!</text>
+        </view>
+        <view wx:elif="{{loading.blending}}" class="loading-indicator">
+          <text class="loading-text">计算中...</text>
+        </view>
+      </button>
+      
+      <button 
+        class="function-btn view-btn {{buttonStates.view ? '' : 'disabled'}}" 
+        bindtap="onView"
+        disabled="{{!buttonStates.view || loading.view}}"
+      >
+        <image class="btn-icon" src="../../assets/icons/search.png" mode="aspectFit" />
+        <text class="btn-text">查看</text>
+        <text class="btn-desc">View</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- Amount Constraint Notice -->
+  <view class="constraint-notice">
+    <text class="constraint-icon">💡</text>
+    <text class="constraint-text">{{totalAmountConstraintText}}</text>
+  </view>
+
+  <!-- Imported Waste List Section -->
+  <view class="waste-section">
+    <view class="section-header">
+      <view class="section-title">
+        <text class="title-text">已导入危废</text>
+        <text class="count-badge">{{importedWastes.length}}</text>
+      </view>
+      
+      <view class="section-actions">
+        <button 
+          wx:if="{{importedWastes.length > 0}}" 
+          class="reset-btn"
+          bindtap="onReset"
+        >
+          重置
+        </button>
+      </view>
+    </view>
+
+    <!-- Empty State -->
+    <view wx:if="{{importedWastes.length === 0}}" class="empty-state">
+      <image class="empty-icon" src="../../assets/icons/waste.png" mode="aspectFit" />
+      <text class="empty-text">暂无导入的危废</text>
+      <text class="empty-desc">点击"导入"按钮选择危废</text>
+    </view>
+
+    <!-- Waste List -->
+    <view wx:else class="waste-list">
+      <view 
+        wx:for="{{importedWastes}}" 
+        wx:key="wasteId" 
+        class="waste-item"
+        data-item-index="{{index}}"
+        data-waste-id="{{item.wasteId}}"
+      >
+        <!-- Waste Info -->
+        <view class="waste-info">
+          <view class="waste-header">
+            <text class="waste-code">{{item.wasteCode}}</text>
+            <text class="source-unit">{{item.sourceUnit}}</text>
+          </view>
+          <text class="waste-name">{{item.wasteName}}</text>
+          
+          <view class="waste-details">
+            <view class="detail-item">
+              <text class="label">剩余库存:</text>
+              <text class="value">{{item.remainingStorageDisplay}}</text>
+            </view>
+            <view class="detail-item">
+              <text class="label">计划用量:</text>
+              <text class="value {{item.plannedAmount ? 'set' : 'unset'}}">
+                {{item.plannedAmount ? item.plannedAmount + 'kg' : '未设置'}}
+              </text>
+            </view>
+          </view>
+        </view>
+
+        <!-- Action Buttons -->
+        <view class="waste-actions">
+          <button 
+            class="action-btn delete-btn"
+            bindtap="onRemoveWaste"
+            data-waste-id="{{item.wasteId}}"
+          >
+            删除
+          </button>
+        </view>
+      </view>
+    </view>
+
+    <!-- Summary Info -->
+    <view wx:if="{{importedWastes.length > 0}}" class="summary-info-enhanced">
+      <view class="summary-grid">
+        <view class="summary-card amount-card">
+          <view class="summary-main-info">
+            <text class="summary-label">总量</text>
+            <text class="summary-value {{amountStatusClass}}">{{totalAmountDisplay}}</text>
+          </view>
+          <view class="summary-status">
+            <text class="status-icon">{{amountStatusIcon}}</text>
+            <text class="status-text {{amountStatusClass}}">{{amountStatusText}}</text>
+          </view>
+        </view>
+        
+        <view class="summary-card heat-card">
+          <view class="summary-main-info">
+            <text class="summary-label">目标热值</text>
+            <text class="summary-value">{{targetHeatValueMin}}-{{targetHeatValueMax}}kJ/kg</text>
+          </view>
+          <view class="summary-icon">
+            <text class="heat-icon">🔥</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="compatibility-status-card">
+        <view class="compatibility-info">
+          <text class="compatibility-label">相容性</text>
+          <text class="compatibility-value status-{{sessionStatus}}">
+            {{sessionStatus === 'draft' ? '草稿' : 
+              sessionStatus === 'waste_selected' ? '已选择危废' :
+              sessionStatus === 'compatibility_checking' ? '相容性检查中' :
+              sessionStatus === 'compatible' ? '✅ 通过' :
+              sessionStatus === 'incompatible' ? '❌ 不通过' :
+              sessionStatus === 'calculating' ? '计算中' :
+              sessionStatus === 'calculation_success' ? '✅ 计算成功' :
+              sessionStatus === 'calculation_failed' ? '❌ 计算失败' : sessionStatus}}
+          </text>
+        </view>
+      </view>
+      
+      <!-- Detailed breakdown (can be collapsed/shown) -->
+      <view class="summary-details">
+        <text class="detail-text">总计划用量: {{totalAmount}}kg</text>
+      </view>
+    </view>
+  </view>
+</view> 

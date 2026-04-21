@@ -1,0 +1,63 @@
+{
+  "pages": [
+    "pages/waste/list/list",
+    "pages/waste/detail/detail",
+    "pages/waste-directory/waste-directory",
+    "pages/physical-property/index", 
+    "pages/thermal-properties/thermal-properties",
+    "pages/thermal-properties/index",
+    "pages/compatibility/compatibility",
+    "pages/physical-property/detail/index",
+    "pages/thermal-properties/spectrum/spectrum",
+    "pages/thermal-properties/thermal/thermal",
+    "pages/thermal-properties/spectral-fingerprint/spectral-fingerprint",
+    "pages/thermal-properties/thermal-behavior/thermal-behavior",
+    "pages/compatibility/import-waste/import-waste",
+    "pages/compatibility/compatibility-check/compatibility-check",
+    "pages/compatibility/calculation-results/calculation-results",
+    "pages/compatibility/blending-progress/blending-progress"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarTitleText": "危废热处理智库",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#6366f1",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/waste/list/list",
+        "text": "危废目录",
+        "iconPath": "assets/icons/Waste-1.png",
+        "selectedIconPath": "assets/icons/waste-active.png"
+      },
+      {
+        "pagePath": "pages/physical-property/index", 
+        "text": "理化特性",
+        "iconPath": "assets/icons/propetites-1.png",
+        "selectedIconPath": "assets/icons/properties-active.png"
+      },
+      {
+        "pagePath": "pages/thermal-properties/thermal-properties",
+        "text": "热力学特性", 
+        "iconPath": "assets/icons/thermal.png",
+        "selectedIconPath": "assets/icons/thermal.png"
+      },
+      {
+        "pagePath": "pages/compatibility/compatibility",
+        "text": "配伍模拟",
+        "iconPath": "assets/icons/配伍.png", 
+        "selectedIconPath": "assets/icons/blending-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,26 @@
+<view class="container">
+  <view class="header">
+    <text class="title">热力学特性</text>
+    <text class="subtitle">THERMAL PROPERTIES</text>
+  </view>
+  
+  <view class="module-list">
+    <view class="module-card" bindtap="goToSpectrum">
+      <view class="card-icon">🌈</view>
+      <view class="card-content">
+        <text class="card-title">光谱指纹</text>
+        <text class="card-desc">通过光谱分析识别危废成分特征，建立独特的"指纹"标识</text>
+      </view>
+      <view class="card-arrow">→</view>
+    </view>
+    
+    <view class="module-card" bindtap="goToThermal">
+      <view class="card-icon">🔬</view>
+      <view class="card-content">
+        <text class="card-title">热行为指纹</text>
+        <text class="card-desc">分析危废在不同温度下的热力学特性和反应规律</text>
+      </view>
+      <view class="card-arrow">→</view>
+    </view>
+  </view>
+</view>

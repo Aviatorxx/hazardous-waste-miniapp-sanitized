@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "危废目录",
+  "navigationBarBackgroundColor": "#4167B2",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50,
+  "usingComponents": {
+    "search-bar": "../../components/search-bar/search-bar",
+    "waste-card": "../../components/waste-card/waste-card"
+  }
+} 

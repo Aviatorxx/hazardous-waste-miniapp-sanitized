@@ -1,0 +1,77 @@
+<!--pages/compatibility/blending-progress/blending-progress.wxml-->
+<view class="container">
+
+
+  <!-- Progress Section -->
+  <view class="progress-section">
+    <!-- Main Title -->
+    <view class="main-title-container">
+      <text class="main-title">配伍计算</text>
+      <text class="main-subtitle">Blending Calculation</text>
+    </view>
+
+    <!-- Status Icon -->
+    <view class="status-icon-container">
+      <view wx:if="{{calculating}}" class="loading-icon">
+        <image class="rotating-icon" src="../../../assets/icons/chemistry.png" mode="aspectFit" />
+      </view>
+      <view wx:elif="{{calculationSuccess === true}}" class="success-icon">
+        <text class="success-checkmark">✓</text>
+      </view>
+      <view wx:elif="{{calculationSuccess === false}}" class="failure-icon">
+        <text class="failure-exclamation">!</text>
+      </view>
+    </view>
+
+    <!-- Status Text -->
+    <view class="status-text-container">
+      <text class="status-text">{{statusText}}</text>
+      <text wx:if="{{calculating}}" class="status-desc">请稍候，正在分析危废配伍方案...</text>
+      <text wx:elif="{{calculationSuccess === true}}" class="status-desc success">配伍方案计算成功，正在准备结果</text>
+      <text wx:elif="{{calculationSuccess === false}}" class="status-desc failure">配伍方案不满足约束条件</text>
+    </view>
+
+    <!-- Progress Bar -->
+    <view wx:if="{{calculating}}" class="progress-container">
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{progress}}%"></view>
+      </view>
+      <text class="progress-text">{{progress}}%</text>
+    </view>
+
+    <!-- Failure Summary -->
+    <view wx:if="{{calculationSuccess === false}}" class="result-summary failure">
+      <view class="failure-header">
+        <text class="failure-title">配伍失败</text>
+        <text class="failure-subtitle">Blending Failed</text>
+      </view>
+      
+      <view class="failure-message">
+        <text class="failure-text">当前危废配比不满足约束条件，请查看详细失败原因。</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Action Buttons -->
+  <view class="action-section">
+    <view wx:if="{{calculationSuccess === false}}" class="failure-actions">
+      <button class="action-btn primary-btn" bindtap="onViewResults">
+        查看失败原因
+      </button>
+      <button class="action-btn secondary-btn" bindtap="onRetry">
+        重新计算
+      </button>
+    </view>
+    
+
+  </view>
+
+  <!-- Calculation Info -->
+  <view class="calculation-info">
+    <text class="info-title">计算说明</text>
+    <text class="info-text">• 系统正在分析各危废的相容性关系</text>
+    <text class="info-text">• 检查热值、含水率等关键指标</text>
+    <text class="info-text">• 验证是否满足处理能力约束</text>
+    <text class="info-text">• 计算最优配比方案</text>
+  </view>
+</view> 

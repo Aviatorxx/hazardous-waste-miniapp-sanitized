@@ -1,0 +1,84 @@
+<view class="container">
+  <!-- Search Bar -->
+  <view class="search-container">
+    <view class="search-bar">
+      <icon class="search-icon" type="search" size="18"></icon>
+      <input class="search-input" 
+             placeholder="请输入危废代码或关键字" 
+             value="{{searchKeyword}}"
+             bindinput="onSearchInput"
+             confirm-type="search"
+             bindconfirm="onSearchConfirm" />
+    </view>
+  </view>
+  
+  <!-- Waste List -->
+  <scroll-view class="waste-list" 
+               scroll-y="true" 
+               bindscrolltolower="onReachBottom"
+               enable-back-to-top="true">
+    
+    <view class="waste-item" 
+          wx:for="{{wasteList}}" 
+          wx:key="id" 
+          bindtap="onWasteItemTap" 
+          data-id="{{item.id}}">
+      
+      <!-- Header: Waste Name + Storage Badge -->
+      <view class="waste-header">
+        <view class="title-section">
+          <text class="waste-name">{{item.wasteName || '未命名危废'}}</text>
+          <view class="waste-code">{{item.wasteCode}}</view>
+        </view>
+        
+        <view class="storage-info storage-{{item.storageStatus}}" 
+              style="background-color: {{item.storageBgColor}}; border: 1px solid {{item.storageBorderColor}};">
+          <text class="storage-label">剩余库存</text>
+          <text class="storage-amount" style="color: {{item.storageTextColor}};">
+            {{item.remainingStorageDisplay}}
+          </text>
+        </view>
+      </view>
+      
+      <!-- Details Section -->
+      <view class="waste-details">
+        <view class="detail-row">
+          <text class="label">来源单位:</text>
+          <text class="value">{{item.sourceUnit || '-'}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="label">贮存位置:</text>
+          <text class="value">{{item.storageLocation || '-'}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="label">外观:</text>
+          <text class="value">{{item.appearance || '-'}}</text>
+        </view>
+      </view>
+      
+      <!-- Property Tags (if any) -->
+      <view class="property-tags" wx:if="{{item.properties && item.properties.length > 0}}">
+        <view wx:for="{{item.properties}}" wx:for-item="prop" wx:key="*this" class="property-tag {{prop}}">
+          <text wx:if="{{prop === 'flammable'}}">🔥 易燃</text>
+          <text wx:if="{{prop === 'toxic'}}">☠️ 毒性</text>
+          <text wx:if="{{prop === 'corrosive'}}">⚗️ 腐蚀性</text>
+          <text wx:if="{{prop === 'oxidizing'}}">🔥 氧化性</text>
+          <text wx:if="{{prop === 'volatile'}}">💨 挥发性</text>
+          <text wx:if="{{prop === 'reactive'}}">⚡ 反应性</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="loading" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+    
+    <view class="no-more" wx:if="{{!hasMore && wasteList.length > 0}}">
+      <text>没有更多数据了</text>
+    </view>
+    
+    <view class="empty" wx:if="{{!loading && wasteList.length === 0}}">
+      <text>暂无数据</text>
+    </view>
+  </scroll-view>
+</view> 

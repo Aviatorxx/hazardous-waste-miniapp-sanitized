@@ -1,0 +1,12 @@
+.DS_Store
+.idea/
+.vscode/
+.cursor/
+node_modules/
+dist/
+logs/
+target/
+uploads/
+*.log
+frontend/project.private.config.json
+backend/src/main/resources/application-local.yml

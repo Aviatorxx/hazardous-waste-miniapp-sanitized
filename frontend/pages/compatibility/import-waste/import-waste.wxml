@@ -1,0 +1,209 @@
+<wxs module="utils">
+function isAdded(wasteId, addedIds) {
+  var numericWasteId = parseInt(wasteId);
+  var numericAddedIds = [];
+  
+  for (var i = 0; i < addedIds.length; i++) {
+    numericAddedIds.push(parseInt(addedIds[i]));
+  }
+  
+  var result = numericAddedIds.indexOf(numericWasteId) !== -1;
+  
+  console.log('WXS isAdded check:', wasteId, 'in', addedIds, '=', result);
+  
+  return result;
+}
+
+function getButtonText(wasteId, addedIds) {
+  return isAdded(wasteId, addedIds) ? '✓ 已添加' : '+ 添加到配伍模拟';
+}
+
+function getButtonClass(wasteId, addedIds) {
+  return isAdded(wasteId, addedIds) ? 'add-btn-full added' : 'add-btn-full';
+}
+
+function getCardClass(wasteId, addedIds) {
+  return isAdded(wasteId, addedIds) ? 'waste-item added' : 'waste-item';
+}
+
+module.exports = {
+  isAdded: isAdded,
+  getButtonText: getButtonText,
+  getButtonClass: getButtonClass,
+  getCardClass: getCardClass
+};
+</wxs>
+
+<view class="container">
+  <!-- Search Section with Record Count -->
+  <view class="search-section">
+    <view class="search-box">
+      <image src="../../../assets/icons/search.png" class="search-icon" mode="aspectFit" />
+      <input 
+        class="search-input" 
+        placeholder="搜索危废代码、名称或来源单位" 
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+      />
+      <button 
+        wx:if="{{searchKeyword}}" 
+        class="clear-btn" 
+        bindtap="onSearchClear"
+      >
+        <image src="../../../assets/icons/close.png" class="clear-icon" mode="aspectFit" />
+      </button>
+    </view>
+    
+    <!-- Record Count on Right Side -->
+    <view class="record-count">
+      <text wx:if="{{loading}}">搜索中...</text>
+      <text wx:elif="{{searchKeyword}}">找到 {{totalRecords}} 条</text>
+      <text wx:else>共 {{totalRecords}} 条记录</text>
+    </view>
+  </view>
+
+  <!-- Selected Summary (if any) -->
+  <view wx:if="{{addedWasteIds.length > 0}}" class="selected-summary">
+    <text class="selected-count">已添加 {{addedWasteIds.length}} 项危废</text>
+  </view>
+
+  <!-- Waste List -->
+  <view class="waste-list">
+    <view 
+      wx:for="{{wasteList}}" 
+      wx:key="id" 
+      class="{{utils.getCardClass(item.id, addedWasteIds)}}"
+    >
+      <!-- Waste Info -->
+      <view class="waste-info">
+        <view class="waste-header">
+          <text class="waste-code">{{item.wasteCode}}</text>
+          <text class="source-unit">{{item.sourceUnit}}</text>
+          <!-- 优先配伍标识（库存天数达到阈值） -->
+          <view wx:if="{{item.priorityRecommend}}" class="priority-badge">
+            <text>优先配伍（库存≥{{item.priorityThresholdDays}}天）</text>
+          </view>
+        </view>
+        
+        <text class="waste-name">{{item.wasteName}}</text>
+        
+        <view class="waste-details">
+          <view class="detail-row">
+            <text class="label">剩余库存:</text>
+            <text class="value stock-value">{{item.remainingStorageDisplay}}</text>
+          </view>
+
+          <!-- 库存天数（后端动态计算，兼容无字段情况） -->
+          <view wx:if="{{item.storageDays !== null && item.storageDays !== undefined}}" class="detail-row">
+            <text class="label">库存天数:</text>
+            <text class="value">{{item.storageDays}}天</text>
+          </view>
+          
+          <view wx:if="{{item.heatValueCalPerG}}" class="detail-row">
+            <text class="label">热值:</text>
+            <text class="value">{{item.heatValueCalPerG}}cal/g</text>
+          </view>
+          
+          <view wx:if="{{item.waterContentPercent}}" class="detail-row">
+            <text class="label">含水率:</text>
+            <text class="value">{{item.waterContentPercent}}%</text>
+          </view>
+          
+          <view wx:if="{{item.appearance}}" class="detail-row">
+            <text class="label">外观:</text>
+            <text class="value appearance-value">{{item.appearance}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Add Button (Full Width) -->
+      <view class="action-buttons">
+        <button 
+          class="{{utils.getButtonClass(item.id, addedWasteIds)}}"
+          bindtap="{{utils.isAdded(item.id, addedWasteIds) ? 'showAlreadyAdded' : 'onAddWaste'}}"
+          data-waste="{{item}}"
+          disabled="{{utils.isAdded(item.id, addedWasteIds)}}"
+        >
+          {{utils.getButtonText(item.id, addedWasteIds)}}
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- Loading More Indicator -->
+  <view wx:if="{{loading && wasteList.length > 0}}" class="loading-more">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- No More Data -->
+  <view wx:if="{{!hasMore && wasteList.length > 0}}" class="no-more">
+    <text class="no-more-text">没有更多数据了</text>
+  </view>
+
+  <!-- Empty State -->
+  <view wx:if="{{!loading && wasteList.length === 0}}" class="empty-state">
+    <image class="empty-icon" src="../../../assets/icons/waste.png" mode="aspectFit" />
+    <text class="empty-text" wx:if="{{searchKeyword}}">没有找到相关危废</text>
+    <text class="empty-text" wx:else>暂无危废数据</text>
+    <text class="empty-desc" wx:if="{{searchKeyword}}">请尝试其他关键词</text>
+    <text class="empty-desc" wx:else>请稍后重试或联系管理员</text>
+  </view>
+
+  <!-- Floating Action Button -->
+  <view wx:if="{{addedWasteIds.length > 0}}" class="fab">
+    <button class="fab-btn" bindtap="onBack">
+      <text class="fab-text">完成 ({{addedWasteIds.length}})</text>
+    </button>
+  </view>
+
+  <!-- Quantity Modal -->
+  <view wx:if="{{showQuantityModal}}" class="modal-backdrop" bindtap="onModalBackdropTap">
+    <view class="modal-content" bindtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">设置计划用量</text>
+      </view>
+      
+      <scroll-view class="modal-body" scroll-y="true">
+        <view wx:if="{{currentWaste}}" class="waste-info-modal">
+          <view class="waste-header-modal">
+            <text class="waste-code-modal">{{currentWaste.wasteCode}}</text>
+            <text class="waste-name-modal">{{currentWaste.wasteName}}</text>
+          </view>
+          
+          <view class="storage-info">
+            <text class="storage-label">剩余库存：</text>
+            <text class="storage-value">{{currentWaste.remainingStorageDisplay}}</text>
+          </view>
+        </view>
+        
+        <view class="input-group">
+          <text class="input-label">请输入计划用量（kg）：</text>
+          <input 
+            class="quantity-input {{quantityError ? 'error' : ''}}"
+            type="digit"
+            placeholder="不能超过剩余库存量"
+            placeholder-class="input-placeholder"
+            value="{{quantityInput}}"
+            bindinput="onQuantityInput"
+            focus="{{showQuantityModal}}"
+            maxlength="20"
+            adjust-position="false"
+          />
+          <text wx:if="{{quantityError}}" class="error-message">{{quantityError}}</text>
+        </view>
+      </scroll-view>
+      
+      <view class="modal-footer">
+        <button class="modal-btn cancel-btn" bindtap="onQuantityCancel">
+          取消
+        </button>
+        <button class="modal-btn confirm-btn" bindtap="onQuantityConfirm">
+          确定
+        </button>
+      </view>
+    </view>
+  </view>
+
+
+</view> 
